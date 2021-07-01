@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- inclusion for popular javascript libraries -->
+<!-- https://developers.google.com/speed/libraries -->
+
+        
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<!-- inclusion for creating responsive websites -->
+<!-- getbootstrap.com -->
+<!-- https://www.w3schools.com/bootstrap/bootstrap_get_started.asp -->
+
+    <script>
+    </script>
+    <style>
+    </style>
+  </head>
+  <body>
+    <h2><span id="text">Now...</span></h2>
+    <p id="utc"> Joe </p>
+    <p id="hereTime"> </p>
+    <p id="MST"> </p>
+    <p id="SunDial"> </p>
+    <p id="EqOfTime"> </p>
+    <p id="Ascending"> </p>
+    <p id="Descending"> </p>
+    <p id="UnequalHours"> </p>
+
+    
+    <script>
+        document.getElementById("utc").innerHTML = 'UTC: '
+        document.getElementById("hereTime").innerHTML = 'CIVIL: ';
+        document.getElementById("MST").innerHTML = 'MST: ';
+        document.getElementById("SunDial").innerHTML = 'Sun Dial: ';
+        document.getElementById("EqOfTime").innerHTML = 'Equation of Time: ';
+        document.getElementById("Ascending").innerHTML = 'Ascending: ';
+        document.getElementById("Descending").innerHTML = 'Descending: ';
+        document.getElementById("UnequalHours").innerHTML = 'Unequal Hours: ';
+
+
+        function getData(){
+            document.getElementById("utc").innerHTML = 'UTC: '
+            document.getElementById("hereTime").innerHTML = 'CIVIL: ';
+            document.getElementById("MST").innerHTML = 'MST: ';
+            document.getElementById("SunDial").innerHTML = 'Sun Dial: ';
+            document.getElementById("EqOfTime").innerHTML = 'Equation of Time: ';
+            document.getElementById("Ascending").innerHTML = 'Ascending: ';
+            document.getElementById("Descending").innerHTML = 'Descending: ';
+            document.getElementById("UnequalHours").innerHTML = 'Unequal Hours: ';
+
+
+
+
+        }
+      
+        function addData(theData){
+
+          document.getElementById("utc").innerHTML = 'UTC: ' + theData.utc;
+          document.getElementById("hereTime").innerHTML = 'CIVIL: ';
+          document.getElementById("MST").innerHTML = 'MST: ';
+          document.getElementById("SunDial").innerHTML = 'Sun Dial: ';
+          document.getElementById("EqOfTime").innerHTML = 'Equation of Time: ';
+          document.getElementById("Ascending").innerHTML = 'Ascending: ';
+          document.getElementById("Descending").innerHTML = 'Descending: ';
+          document.getElementById("UnequalHours").innerHTML = 'Unequal Hours: ';   
+        }
+
+        function fetchdata(){
+              $.getJSON({
+                  type: "GET",
+                  url: '{{ url_for('background_process')}}',
+                  data: {},
+                  success: function(data){
+                                document.getElementById("utc").innerHTML =  'UTC: ' + data.utc;
+                                document.getElementById("hereTime").innerHTML = 'CIVIL: ' + data.hereTime;
+                                document.getElementById("MST").innerHTML = 'MST: ' + data.MST;
+                                document.getElementById("SunDial").innerHTML = 'Sun Dial: ' + data.SunDial;
+                                document.getElementById("EqOfTime").innerHTML = 'Equation of Time: ' + data.EqOfTime;
+                                document.getElementById("Ascending").innerHTML = 'Ascending: ' + data.Ascending;
+                                document.getElementById("Descending").innerHTML = 'Descending: ' + data.Descending;
+                                document.getElementById("UnequalHours").innerHTML = 'Unequal Hours: ' + data.UnequalHours;
+                                document.getElementById("text").innerHTML = data.header;  
+                  }
+              });
+
+  
+        }
+
+// add event listener to capture changes to wine parameters  
+      $(document).on('click', function () {fetchdata()});
+    </script>
+
+
+  </body>
+</html>
