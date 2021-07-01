@@ -85,7 +85,6 @@ ruamel-yaml==0.15.87
 Send2Trash==1.5.0
 sip==5.0.0
 six==1.15.0
-tensorflow-cpu==2.3.0
 termcolor==1.1.0
 terminado==0.9.1
 testpath==0.4.4
