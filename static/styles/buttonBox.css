@@ -1,0 +1,23 @@
+    button {
+      -webkit-font-smoothing: antialiased;
+      padding: 1.0em 1.5em;
+      margin:0 0.67em 0.67em 0;
+      border-radius: 2em;
+      background-color: transparent;
+      color: black;
+      text-align: center;
+    }
+
+    .button-basic-med {	
+      font-size: 1.25em;
+    }
+    .button-basic-big {	
+      font-size: 2.00em;
+      }
+
+    input {
+      -webkit-font-smoothing: antialiased;
+      margin:0 0.67em 0.67em 0;
+      padding: 1.0em 1.5em;
+
+    }
