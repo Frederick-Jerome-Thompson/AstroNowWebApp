@@ -9,8 +9,6 @@ import logging, io, os, sys
 import scipy
 
 
-from flask_ngrok import run_with_ngrok
-
 import pytz
 import Planet_Tools, pyEph_Tools, ephem, astroNow
 import datetime as dt
@@ -25,7 +23,6 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False #needed to stop errors...
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #no caching because of image stuff
 
 
-run_with_ngrok(app)  # Start ngrok when app is run
 
 
 @app.before_first_request
