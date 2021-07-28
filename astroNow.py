@@ -318,36 +318,47 @@ def unEqualTime(observerQR,now=detnow(),timezone = pytz.timezone("America/Detroi
 
   #observerQR.date = ephem.Date(now) Assume that the QR has the "day" or 24 hour period you want
   
+  QRDate = observerQR.date.datetime()
+
   decimalLong = convertDegMinSec2DegDec(observerQR.long)
   dayOfWeek = theDayOfWeek(observerQR.date.datetime())
   times = planetRisings(observerQR,ephem.Sun(),timezone)
+  
+
+  if (now < times[0]):
+    QRDate = QRDate + dt.timedelta(days=-1)
+    observerQR.date = ephem.date(QRDate)
+    times = planetRisings(observerQR,ephem.Sun(),timezone)
+
+  
 
   #rise, transit, set, antitransit, next rise
+  
   # print('@@@@@@@@@@in unEqualTime')
-  # 
-  # for time in times: 
+  
+  # for time in times:
   #   print(time.strftime("%Y-%m-%d %H:%M:%S"))
 
   # print('now is: %s' % now)
   if now < times[1] and now >= times[0]:
     i = 1
     hours = eqHour(now,times[i-1],times[i],i)
-    theHour = str(int(eqHour(now,times[i-1],times[i],i)) ) 
+    theHour = str(int(eqHour(now,times[i-1],times[i],i)) )
     thePlanet = OldHours['days'][dayOfWeek]['hours'][theHour]
   elif now < times[2] and now >= times[1]:
     i = 2
     hours = eqHour(now,times[i-1],times[i],i)
-    theHour = str(int(eqHour(now,times[i-1],times[i],i)) ) 
+    theHour = str(int(eqHour(now,times[i-1],times[i],i)) )
     thePlanet = OldHours['days'][dayOfWeek]['hours'][theHour]
   elif now < times[3] and now >= times[2]:
     i = 3
     hours = eqHour(now,times[i-1],times[i],i)
-    theHour = str(int(eqHour(now,times[i-1],times[i],i)) ) 
+    theHour = str(int(eqHour(now,times[i-1],times[i],i)) )
     thePlanet = OldHours['days'][dayOfWeek]['hours'][theHour]
   elif now < times[4] and now >= times[3]:
     i = 4
     hours = eqHour(now,times[i-1],times[i],i)
-    theHour = str(int(eqHour(now,times[i-1],times[i],i)) ) 
+    theHour = str(int(eqHour(now,times[i-1],times[i],i)) )
     thePlanet = OldHours['days'][dayOfWeek]['hours'][theHour]
   else:
     hours = 13
