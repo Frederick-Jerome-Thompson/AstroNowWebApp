@@ -3,16 +3,14 @@ from flask import Flask, render_template, flash, request, jsonify, Markup
 
 
 import logging, io, os, sys
-# import pandas as pd
-# import numpy as np
 
-#import scipy
+
+
 
 
 import pytz
 import Planet_Tools, pyEph_Tools, ephem, astroNow
 import datetime as dt
-# import matplotlib.pyplot as plt
 
 import random
 
@@ -23,6 +21,7 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False #needed to stop errors...
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #no caching because of image stuff
 
 
+run_with_ngrok(app)  # Start ngrok when app is run
 
 
 @app.before_first_request
@@ -39,20 +38,56 @@ def hello():
     return render_template( 'index.html')
 
 
-# accepts either deafult values or user inputs and outputs prediction 
+# uses query string to get time, (lat,lon) if either is available 
 @app.route('/background_process', methods=['POST', 'GET'])
 def background_process():
 
-    theNow = astroNow.utcnow()
+    #default timezone to det for now
+    timezone = pytz.timezone("America/Detroit")
+
+# read in lat and lon
+
+    hasLatLon = False
+
+    reqLat = request.args.get('lat')
+    reqLon = request.args.get('lon')
+
+    if ((reqLat != None) and (reqLon != None)):
+      QR.lon = reqLon
+      QR.lat = reqLat
+
+
+
+
+
+#read time in    
+    hasTime=False
+    reqTime = request.args.get('time')
+    if (reqTime != None):
+
+      hasTime = True
+      try:
+          reqTime = dt.datetime.strptime(reqTime, '%Y%m%d_%H:%M:%S')
+      except ValueError:
+          hasTime = False
+
+
+    theNow = astroNow.utcnow()    
     theHereTime = astroNow.detnow()
+
+    if (hasTime):
+      theHereTime = timezone.localize(reqTime, is_dst=None)
+      theNow = theHereTime.astimezone(pytz.utc)
+
+
 
     theYear = theHereTime.year
     theMonth = theHereTime.month
     theDay = theHereTime.day
 
-    #default timezone to det for now
-    timezone = pytz.timezone("America/Detroit")
+    #local noon
     localNoon = timezone.localize(dt.datetime(theYear,theMonth,theDay,12))
+
 
     #set date to get MST
     QR.date =  ephem.Date(dt.datetime(theYear,theMonth,theDay,0))
@@ -74,7 +109,7 @@ def background_process():
     #formated date and time
     s = astroNow.formatedNow(theHereTime)
 
-    return jsonify({"utc" : theNow, "hereTime": theHereTime, "MST": theMST, "SunDial": theDialTime,
+    return jsonify({"request": reqTime, "utc" : theNow, "hereTime": theHereTime, "MST": theMST, "SunDial": theDialTime,
                       "EqOfTime": deltaEqOfTime, "Ascending" : zodiacs['ascending'], "Descending" : zodiacs['descending'],
                       "UnequalHours" : EqualTimeFormat,'header':s})
 
