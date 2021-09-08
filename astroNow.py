@@ -5,6 +5,33 @@ from math import pi
 import calendar
 import pytz
 
+zodiac = {'Aries':[0,30],
+          'Taurus':[30,60],
+          'Gemini':[60,90],
+          'Cancer':[90,120],
+          'Leo':[120,150],
+          'Virgo':[150,180],
+          'Libra':[180,210],
+          'Scorpio':[210,240],
+          'Sagittarius':[240,270],
+          'Capricorn':[270,300],
+          'Aquarius':[300,330],
+          'Picises':[330,360]
+          }
+
+zodiacName = {'Aries':'I',
+          'Taurus':'II',
+          'Gemini':'III',
+          'Cancer':'IV',
+          'Leo':'V',
+          'Virgo':'VI',
+          'Libra':'VII',
+          'Scorpio':'VIII',
+          'Sagittarius':'IX',
+          'Capricorn':'X',
+          'Aquarius':'XI',
+          'Picises':'XII'
+          }
 
 
 OldHours= {
@@ -159,8 +186,8 @@ def dialTime(observerQR,now=utcnow()):
 
 
 def eqHour(now,beg,end,index):
-    #beg is start of period, end is end e.g., set to antitransit 
-    #index is which period: 1:morning, 2:afternoon, 3:evening, 4: night.  
+    #beg is start of period, end is end e.g., set to antitransit
+    #index is which period: 1:morning, 2:afternoon, 3:evening, 4: night.
     #index afternoon and night are post meridian and get 6 extra hours
 
     anHourIs = (end-beg) / 6
@@ -196,7 +223,7 @@ def noTZDiff(aDt,bDt):
     bMinute = bDt.minute
     bSecond = bDt.second
 
-    return ((aYear-bYear) * 365*24*60 + (aMonth-bMonth) *30*24*60 + (aDay-bDay)*24*60 + (aHour-bHour)*60 + (aMinute-bMinute))*60 + aSecond-bSecond  
+    return ((aYear-bYear) * 365*24*60 + (aMonth-bMonth) *30*24*60 + (aDay-bDay)*24*60 + (aHour-bHour)*60 + (aMinute-bMinute))*60 + aSecond-bSecond
 
 def formatFracHour(delta):
     sgn = abs(delta)/delta
@@ -376,7 +403,7 @@ def formatPlaentRiseEtc(planetInfo):
     s = 'rise: %s  transit: %s set: %s' % (riseTime.strftime("%Y-%m-%d %H:%M:%S"), transTime.strftime("%Y-%m-%d %H:%M:%S"), setTime.strftime("%Y-%m-%d %H:%M:%S"))
     s = s + '\r\n' + 'time to local noon: %s' % planetInfo['time2noon']
     s = s + '\r\n' + 'time from transit to setting: %s ' % planetInfo['noon2dark']
-    return s  
+    return s
 
 def planetRiseEtc(observerQR,planet,timezone):
 
@@ -415,6 +442,43 @@ def planetRiseEtc(observerQR,planet,timezone):
 
 
     return {'rise':riseTime,'transit':transTime,'set':setTime,'anti':antiTime,'time2noon':(transTime-riseTime),'noon2dark':(setTime - transTime)}
+
+def planetRisingsB(observerQR,planet,timezone):
+
+    listOfTimes = []
+    storeDate = observerQR.date
+
+    theYear,theMonth,theDay = YrMthDay(observerQR.date.datetime())
+    planetInfo_day = planetRiseEtc(observerQR,planet,timezone)
+    
+
+
+
+
+    #do next rise
+    theYear,theMonth,theDay = nxtYrMthDay(dt.datetime(theYear,theMonth,theDay))
+    observerQR.date =  ephem.Date(dt.datetime(theYear,theMonth,theDay,0))
+    planet.compute(observerQR)
+
+    startStr = '%4d/%02d/%02d' % nxtYrMthDay(observerQR.date.datetime())
+
+
+    planetInfo_nextDay =planetRiseEtc(observerQR,planet,timezone)
+
+    riseTime = planetInfo_day['rise']
+    transTime = planetInfo_day['transit']
+    setTime = planetInfo_day['set']
+    antiTime = planetInfo_day['anti']
+    nextRise = planetInfo_nextDay['rise']
+
+
+
+
+    listOfTimes = [riseTime,transTime,setTime,antiTime,nextRise]
+    observerQR.date = storeDate
+
+    return listOfTimes
+
 
 def planetRisings(observerQR,planet,timezone):
 
@@ -493,8 +557,128 @@ def getAscendDescend(observerQR):
         min_but_not_zero_az_index = i #take the zodiac that is rising
       if zod['alt'] >= 0 and zod['az'] > max_but_not_zero_az:
         max_but_not_zero_az = zod['az']
-        max_but_not_zero_az_index =  i-1 #take zodiac that is setting 
+        max_but_not_zero_az_index =  i-1 #take zodiac that is setting
 
     return {'ascending':zodiacNames[min_but_not_zero_az_index],'descending':zodiacNames[max_but_not_zero_az_index]}
 
 
+
+
+
+#for astroNow Data and MoonReport
+
+def planetData(observerQR,planet,timezone=pytz.timezone("America/Detroit")):
+
+      planet.compute(observerQR)
+      times = planetRisingsB(observerQR,planet,timezone)
+      newTimes = {'rise': times[0], 'transit': times[1], 'set': times[2], 'nextRise': times[3]}
+      return {'name': planet.name, 'ra':planet.ra*12/pi,'dec':planet.dec*180/pi,'az':planet.az*180/pi,'alt': planet.alt*180/pi, 'zodiac': getRAZodiac(ephem.Ecliptic(planet).lon*180/pi),
+              'constellation': ephem.constellation(planet)[1],'times':newTimes, 'phase': planet.phase}
+
+
+def getRAZodiac(lon,zods=zodiac):
+  for i,zod in enumerate(zods):
+      if lon < zods[zod][1] and lon >= zods[zod][0]:
+        return zod
+
+
+def getDegZTrans(observerQR):
+  degrees = [i for i in range(360)]
+  degrees = [i * pi / 180 for i in degrees]
+  degrees = [ephem.Ecliptic(long,0) for long in degrees] #zodiac as Ecliptic coordinates
+  degrees = [ephem.Equatorial(deg) for deg in degrees] #in equatorial coords (ra,dec)
+
+  stars = []
+  minD = 180
+  idx = 3000
+  print('#####################')
+  for i,deg in enumerate(degrees):
+    star = ephem.FixedBody()
+    star._ra = deg.ra
+    star._dec = deg.dec
+    star.compute(observerQR)
+    az = star.az*180/pi
+
+    if (az > 90  and az <= 180):
+      if (minD > 180-az):
+        minD = 180-az
+        idx = i
+
+
+  print('#####################')
+  return idx
+
+def fndMoonPeaks(moonData):
+  
+  ans = {}
+  moons = len(moonData)
+
+
+  for i in range(moons-1):
+
+      prevMoon = moonData[i]
+      curMoon = moonData[i+1]
+
+      if prevMoon['name']=='Waning Crescent' and curMoon['name']=='Waxing Crescent':
+        ans['newMoon'] =  prevMoon['date']
+
+      if prevMoon['name']=='Waxing Crescent' and curMoon['name']=='Waxing Gibbous':
+        ans['firstQuarter'] =  prevMoon['date']
+
+      if prevMoon['name']=='Waxing Gibbous' and curMoon['name']=='Waning Gibbous':
+        ans['fullMoon'] =  prevMoon['date']
+
+      if prevMoon['name']=='Waning Gibbous' and curMoon['name']=='Waning Crescent':
+        ans['thirdQuarter'] =  prevMoon['date']
+
+
+  return ans
+
+
+def moonReport(observerQR,timezone):
+    #from https://stackoverflow.com/questions/26702144/human-readable-names-for-phases-of-the-moon-with-pyephem code was psuedo and needed to be corrected
+
+
+    #definitions
+    #
+    # new moon: last day of a waning cresent moon
+    # first quarter: last day of a waxing cresent moon
+    # full moon: last day of a waxing gibbous moon
+    # third quarter: last day of a wanning gibbous moon
+
+    tau = 2.0 * ephem.pi
+
+    moonData = []
+
+    begDate = dt.datetime(observerQR.date.datetime().year,observerQR.date.datetime().month,observerQR.date.datetime().day,8,0,0)
+
+    sun = ephem.Sun()
+    moon = ephem.Moon()
+    names = ['Waxing Crescent', 'Waxing Gibbous',
+            'Waning Gibbous', 'Waning Crescent']
+
+    for n in range(1, 31):
+        s = '2021/%d/09' % n
+
+        naive = begDate + dt.timedelta(days=n-1)
+        local_dt = timezone.localize(naive, is_dst=None)
+        theDate = local_dt.astimezone(pytz.utc)
+
+        observerQR.date =  ephem.Date(theDate)
+
+        sun.compute(observerQR)
+        moon.compute(observerQR)
+
+        sunlon = ephem.Ecliptic(sun).lon
+        moonlon = ephem.Ecliptic(moon).lon
+
+        angle = (moonlon - sunlon) % tau
+        quarter = int(angle * 4.0 // tau)
+
+        moonData.append({'n':n,'date': observerQR.date.datetime(),'name': names[quarter],'moonlon': moonlon,'sunlon':sunlon})
+        #print("%s, date: %s, name: %s moon lon: %s sun lon: %s" % (n,QR.date, names[quarter], moonlon,sunlon))
+    
+    return moonData
+
+
+ 
