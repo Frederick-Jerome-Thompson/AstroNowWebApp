@@ -38,6 +38,49 @@ def hello():
 
 
 
+#transit degree
+@app.route("/trans_deg")
+def getTransits():
+    #default timezone to det for now
+    timezone = pytz.timezone("America/Detroit")
+
+# read in lat and lon
+
+    hasLatLon = False
+
+    reqLat = request.args.get('lat')
+    reqLon = request.args.get('lon')
+
+    if ((reqLat != None) and (reqLon != None)):
+      QR.lon = reqLon
+      QR.lat = reqLat
+
+#read time in    
+    hasTime=False
+    reqTime = request.args.get('time')
+    if (reqTime != None):
+
+      hasTime = True
+      try:
+          reqTime = dt.datetime.strptime(reqTime, '%Y%m%d_%H:%M:%S')
+      except ValueError:
+          hasTime = False
+
+
+    theNow = astroNow.utcnow()    
+    theHereTime = astroNow.detnow()
+
+    if (hasTime):
+      theHereTime = timezone.localize(reqTime, is_dst=None)
+      theNow = theHereTime.astimezone(pytz.utc)
+    
+    QR.date = theNow
+    
+    
+
+    return  jsonify(astroNow.getDegZTrans(QR))
+
+
 #moon report
 @app.route("/moon_report")
 def getMoonData():
@@ -73,7 +116,8 @@ def getMoonData():
     if (hasTime):
       theHereTime = timezone.localize(reqTime, is_dst=None)
       theNow = theHereTime.astimezone(pytz.utc)
-    
+
+    QR.date = theNow   
 
     MR = astroNow.moonReport(QR,timezone)
     
@@ -118,13 +162,13 @@ def getData():
       theHereTime = timezone.localize(reqTime, is_dst=None)
       theNow = theHereTime.astimezone(pytz.utc)
     
+    QR.date = theNow
+    
     #planets as list
     planets = [ephem.Sun(),ephem.Moon(),ephem.Mars(),ephem.Mercury(),ephem.Jupiter(),ephem.Venus(),ephem.Saturn()]
     planetData = [astroNow.planetData(QR,thePlanet) for thePlanet in planets]
 
     return  jsonify(planetData)
-
-
 # uses query string to get time, (lat,lon) if either is available 
 @app.route('/background_process', methods=['POST', 'GET'])
 def background_process():
