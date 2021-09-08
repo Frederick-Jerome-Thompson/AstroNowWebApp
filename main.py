@@ -120,9 +120,11 @@ def getMoonData():
     QR.date = theNow   
 
     MR = astroNow.moonReport(QR,timezone)
+    peaks = astroNow.fndMoonPeaks(MR)
+    peaks['report'] = MR
     
 
-    return  jsonify(astroNow.fndMoonPeaks(MR))
+    return  jsonify(peaks)
 
 
 #data section
