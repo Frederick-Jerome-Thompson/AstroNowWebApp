@@ -586,20 +586,7 @@ def planetData(observerQR,planet,timezone=pytz.timezone("America/Detroit")):
 def getRAZodiac(lon,zods=zodiac):
   for i,zod in enumerate(zods):
       if lon < zods[zod][1] and lon >= zods[zod][0]:
-        return zoddef planetData(observerQR,planet,timezone=pytz.timezone("America/Detroit")):
-
-      storeDate = observerQR.date
-      planet.compute(observerQR)
-      times = planetRisingsB(observerQR,planet,timezone)
-
-      observerQR.date = storeDate
-      planet.compute(observerQR)
-
-
-      newTimes = {'rise': times[0], 'transit': times[1], 'set': times[2], 'nextRise': times[3]}
-      return {'name': planet.name, 'ra':planet.ra*12/pi,'dec':planet.dec*180/pi,'az':planet.az*180/pi,'alt': planet.alt*180/pi, 'zodiac': getRAZodiac(ephem.Ecliptic(planet).lon*180/pi),
-              'constellation': ephem.constellation(planet)[1],'times':newTimes, 'phase': planet.phase, 'obsLat':observerQR.lat,'obsLon':observerQR.lon,'obsDate':observerQR.date}
-
+        return zod
 
 def getDegZTrans(observerQR):
   degrees = [i for i in range(360)]
