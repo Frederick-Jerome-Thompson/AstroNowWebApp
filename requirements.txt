@@ -1,4 +1,4 @@
-python==3.10.12
+python==3.9.6
 gunicorn
 absl-py==0.11.0
 argon2-cffi==20.1.0
