@@ -150,7 +150,8 @@ def getData():
       QR.lat = reqLat
       tzFind = TimezoneFinder()
       timezone_here = tzFind.timezone_at(lng=float(reqLon), lat=float(reqLat))
-      timezone = timezone_here
+      timezone = pytz.timezone(timezone_here)
+
 
 #read time in    
     hasTime=False
@@ -197,7 +198,7 @@ def background_process():
       QR.lat = reqLat
       tzFind = TimezoneFinder()
       timezone_here = tzFind.timezone_at(lng=float(reqLon), lat=float(reqLat))
-      timezone = timezone_here
+      timezone = pytz.timezone(timezone_here)
 
 
 
