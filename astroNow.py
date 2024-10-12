@@ -177,7 +177,8 @@ def hereTime_inpt(lat,lon,year,month,day,hour,minute,second):
   tzFind = TimezoneFinder()
   timezone_here = tzFind.timezone_at(lng=lon, lat=lat)
   d = dt.datetime(year, month, day, hour, minute, second)
-  e = d.astimezone(pytz.timezone(timezone_here))
+  # e = d.astimezone(pytz.timezone(timezone_here))
+  e = d.replace(tzinfo=pytz.timezone(timezone_here))
 
   return e
 
