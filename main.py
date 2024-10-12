@@ -173,7 +173,7 @@ def getData():
       theHereTime = astroNow.hereTime_inpt(lat=float(reqLat),lon=float(reqLon),
 					year=reqTime.year, month=reqTime.month, day=reqTime.day,
 					hour=reqTime.hour, minute=reqTime.minute, second=reqTime.second)
-      theNow = astrNow.utcTime_inpt(reqTime,timezone)
+      theNow = astroNow.utcTime_inpt(reqTime,timezone)
     
     QR.date = theNow
     
@@ -229,7 +229,7 @@ def background_process():
 			 reqTime.year,reqTime.month,reqTime.day,
                          reqTime.hour,reqTime.minute,reqTime.second)
 	    
-      theNow = astrNow.utcTime_inpt(reqTime,timezone)
+      theNow = astroNow.utcTime_inpt(reqTime,timezone)
 
 
 
