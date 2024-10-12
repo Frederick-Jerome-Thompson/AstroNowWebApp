@@ -75,7 +75,7 @@ def getTransits():
     theHereTime = astroNow.detnow()
 
     if (hasTime):
-      theHereTime = timezone.localize(reqTime, is_dst=None)
+      theHereTime = timezone.localize(reqTime)
       theNow = theHereTime.astimezone(pytz.utc)
     
     QR.date = theNow
@@ -118,7 +118,7 @@ def getMoonData():
     theHereTime = astroNow.detnow()
 
     if (hasTime):
-      theHereTime = timezone.localize(reqTime, is_dst=None)
+      theHereTime = timezone.localize(reqTime)
       theNow = theHereTime.astimezone(pytz.utc)
 
     QR.date = theNow   
