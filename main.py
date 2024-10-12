@@ -192,6 +192,9 @@ def background_process():
     if ((reqLat != None) and (reqLon != None)):
       QR.lon = reqLon
       QR.lat = reqLat
+      tzFind = TimezoneFinder()
+      timezone_here = tzFind.timezone_at(lng=reqLon, lat=reqLat)
+      timezone = timezone_here
 
 
 
@@ -215,7 +218,7 @@ def background_process():
     #switch for input time	
     if (hasTime):
       # theHereTime = timezone.localize(reqTime, is_dst=None)
-      theHereTime = astroNow.hereTime_inpt(lat,lon,
+      theHereTime = astroNow.hereTime_inpt(reqLat,reqLon,
 			 reqTime.year,reqTime.month,reqTime.day,
                          reqTime.hour,reqTime.minute,reqTime.second)
 	    
