@@ -221,7 +221,7 @@ def background_process():
     #switch for input time	
     if (hasTime):
       # theHereTime = timezone.localize(reqTime, is_dst=None)
-      theHereTime = astroNow.hereTime_inpt(reqLat,reqLon,
+      theHereTime = astroNow.hereTime_inpt(float(reqLat),float(reqLon),
 			 reqTime.year,reqTime.month,reqTime.day,
                          reqTime.hour,reqTime.minute,reqTime.second)
 	    
