@@ -197,9 +197,15 @@ def detnow():
 #returns datetime with detroit timezone from another datetime
 def detTime_inpt(d):
 
-  target_timezone = pytz.timezone('US/Eastern') 
+  target_timezone = pytz.timezone('US/Eastern')
   target_datetime = d.astimezone(target_timezone)
-  
+
+  return target_datetime
+
+def utcTime_inpt(d):
+
+  target_datetime = d.astimezone(pytz.utc)
+
   return target_datetime
 
 #mean solar time
