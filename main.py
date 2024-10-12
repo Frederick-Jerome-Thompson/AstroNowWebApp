@@ -144,6 +144,9 @@ def getData():
     if ((reqLat != None) and (reqLon != None)):
       QR.lon = reqLon
       QR.lat = reqLat
+      tzFind = TimezoneFinder()
+      timezone_here = tzFind.timezone_at(lng=lon, lat=lat)
+      timezone = timezone_here
 
 #read time in    
     hasTime=False
@@ -204,12 +207,17 @@ def background_process():
       except ValueError:
           hasTime = False
 
-
+    #calculate current times	
     theNow = astroNow.utcnow()    
-    theHereTime = astroNow.detnow()
+    theHereTime = astroNow.herenow(float(QR.lat)*180/pi,float(QR.lon)*180/pi)
 
+    #switch for input time	
     if (hasTime):
-      theHereTime = timezone.localize(reqTime, is_dst=None)
+      # theHereTime = timezone.localize(reqTime, is_dst=None)
+      theHereTime = astroNow.hereTime_inpt(lat,lon,
+			 reqTime.year,reqTime.month,reqTime.day,
+                         reqTime.hour,reqTime.minute,reqTime.second)
+	    
       theNow = theHereTime.astimezone(pytz.utc)
 
 
