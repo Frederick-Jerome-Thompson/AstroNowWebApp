@@ -261,7 +261,7 @@ def background_process():
     #formated date and time
     s = astroNow.formatedNow(theHereTime)
 
-    return jsonify({"request": reqTime, "utc" : utcTime_inpt(theHereTime), "hereTime": theHereTime, "MST": theMST, "SunDial": theDialTime,
+    return jsonify({"request": reqTime, "utc" : astroNow.utcTime_inpt(theHereTime), "hereTime": theHereTime, "MST": theMST, "SunDial": theDialTime,
                       "EqOfTime": deltaEqOfTime, "Ascending" : zodiacs['ascending'], "Descending" : zodiacs['descending'],
                       "UnequalHours" : EqualTimeFormat,'header':s})
 
