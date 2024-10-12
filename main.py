@@ -229,7 +229,7 @@ def background_process():
 			 reqTime.year,reqTime.month,reqTime.day,
                          reqTime.hour,reqTime.minute,reqTime.second)
 	    
-      theNow = theHereTime.astimezone(pytz.utc)
+      theNow = astrNow.utcTime_inpt(reqTime,timezone)
 
 
 
@@ -261,7 +261,7 @@ def background_process():
     #formated date and time
     s = astroNow.formatedNow(theHereTime)
 
-    return jsonify({"request": reqTime, "utc" : astroNow.utcTime_inpt(theHereTime), "hereTime": theHereTime, "MST": theMST, "SunDial": theDialTime,
+    return jsonify({"request": reqTime, "utc" : theNow, "hereTime": theHereTime, "MST": theMST, "SunDial": theDialTime,
                       "EqOfTime": deltaEqOfTime, "Ascending" : zodiacs['ascending'], "Descending" : zodiacs['descending'],
                       "UnequalHours" : EqualTimeFormat,'header':s})
 
