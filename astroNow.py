@@ -202,11 +202,13 @@ def detTime_inpt(d):
 
   return target_datetime
 
-def utcTime_inpt(d):
+def utcTime_inpt(d,useTZ):
 
-  target_datetime = d.astimezone(pytz.utc)
 
-  return target_datetime
+  d_utc = useTZ.localize(d)
+  utcTime = d_utc.astimezone(pytz.utc)
+
+  return utcTime
 
 #mean solar time
 def MST(observerQR, now = utcnow()):
