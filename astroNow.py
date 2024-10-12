@@ -5,6 +5,10 @@ from math import pi
 import calendar
 import pytz
 
+from timezonefinder import TimezoneFinder
+from pytz import timezone, utc
+
+
 zodiac = {'Aries':[0,30],
           'Taurus':[30,60],
           'Gemini':[60,90],
@@ -163,15 +167,39 @@ OldHours= {
   }
 }
 
-
+#Datetime functions
+#current utc time
 def utcnow():
     return dt.datetime.now(tz=pytz.utc)
-#
+          
+#returns inputed time in locations timezone
+def hereTime_inpt(lat,lon,year,month,day,hour,minute,second):
+  tzFind = TimezoneFinder()
+  timezone_here = tzFind.timezone_at(lng=lon, lat=lat)
+  d = dt.datetime(year, month, day, hour, minute, second)
+  e = d.astimezone(pytz.timezone(timezone_here))
+
+  return e
+
+#finds timezone for place, returns time in that zone
+def herenow(lat,lon):
+  tzFind = TimezoneFinder()
+  timezone_here = tzFind.timezone_at(lng=lon, lat=lat)
+  local_here = pytz.timezone(timezone_here)
+
+  return dt.datetime.now(local_here)
+
+#returns current time in detroit
 def detnow():
     return dt.datetime.now(tz=pytz.timezone('America/Detroit'))
-#civil time: find timezone based on long
-def herenow(long = ''):
-    return dt.datetime.now(tz=pytz.utc)
+          
+#returns datetime with detroit timezone from another datetime
+def detTime_inpt(d):
+
+  target_timezone = pytz.timezone('US/Eastern') 
+  target_datetime = d.astimezone(target_timezone)
+  
+  return target_datetime
 
 #mean solar time
 def MST(observerQR, now = utcnow()):
