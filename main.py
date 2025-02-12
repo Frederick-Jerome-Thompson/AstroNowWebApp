@@ -170,6 +170,7 @@ def getData():
 
     if (hasTime):
       #theHereTime = timezone.localize(reqTime, is_dst=None)
+      #This is off.  Causing inputed unequal hours to be wrong.
       theHereTime = astroNow.hereTime_inpt(lat=float(reqLat),lon=float(reqLon),
 					year=reqTime.year, month=reqTime.month, day=reqTime.day,
 					hour=reqTime.hour, minute=reqTime.minute, second=reqTime.second)
